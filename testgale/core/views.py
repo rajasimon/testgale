@@ -8,7 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 
-from testgale.core.models import Crawler, Link, Image
+from testgale.core.models import Crawler, Image
 
 
 # Create your views here.
@@ -33,4 +33,12 @@ def crawl(request):
             "depth": depth
         }
     )
+    return JsonResponse({'status': True})
+
+
+def result(request):
+    url = request.GET.get('url')
+    crawler = Crawler.objects.get(url=url)
+
+    import pdb; pdb.set_trace()
     return JsonResponse({'status': True})

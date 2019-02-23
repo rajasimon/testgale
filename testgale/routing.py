@@ -1,10 +1,9 @@
-from channels.routing import ProtocolTypeRouter, ChannelNameRouter
+from channels.routing import ProtocolTypeRouter, ChannelNameRouter, URLRouter
 
-from testgale.core import consumers
+from testgale.core import routing
 
 application = ProtocolTypeRouter({
     # Empty for now (http->django views is added by default)
-    "channel": ChannelNameRouter({
-        "crawler-process": consumers.CrawlerProcess,
-    }),
+    "websocket": URLRouter(routing.websocket_patterns),
+    "channel": ChannelNameRouter(routing.channel_patterns),
 })

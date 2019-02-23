@@ -12,6 +12,8 @@
     <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
 
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reconnecting-websocket/1.0.0/reconnecting-websocket.js"></script>
   </head>
   <body>
     <div id="root"></div>
@@ -21,11 +23,31 @@
         constructor() {
           super()
 
-          this.state = {url: '', depth: ''}
+          this.state = {url: '', depth: '', isLoading: false}
 
+          this.fetchResult = this.fetchResult.bind(this)
           this.handleUrl = this.handleUrl.bind(this)
           this.handleDepth = this.handleDepth.bind(this)
           this.handleSubmit = this.handleSubmit.bind(this)
+        }
+
+        componentDidMount() {
+          const socket = new ReconnectingWebSocket('ws://' + window.location.host + '/ws/chat/stream/')
+  
+          socket.onmessage = (event) => {
+            const data = JSON.parse(event.data).message
+            
+            if (data.isCompleted) {
+              console.log(this)
+              this.fetchResult()
+            }
+          }
+        }
+
+        fetchResult() {
+          fetch('/result/?url=' + this.state.url)
+            .then(res => res.json())
+            .then(response => console.log(response))
         }
 
         handleUrl(event) {
@@ -42,6 +64,8 @@
 
         handleSubmit(event) {
           event.preventDefault()
+
+          this.setState({isLoading: true})
           
           fetch('/crawl/', {
             method: 'POST',
@@ -66,7 +90,7 @@
                             <input type="number" className="input" name="depth" placeholder="Enter Number" required onChange={this.handleDepth} />
                           </p>
                           <p className="control">
-                            <button className="button">GO</button>
+                            <button className={this.state.isLoading? 'button' : 'button'}>Submit</button>
                           </p>
                         </div>
                       </div>
