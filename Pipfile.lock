@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "6637e04cb8326de7561f3bba4e9121c06914078e547fbace8996b9fd37a0f5db"
+            "sha256": "aa45fa1fc19dc0aef7fd130a356b9429ecba8944e51e390cf975d220848eabac"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -132,6 +132,13 @@
             ],
             "version": "==2.2.5"
         },
+        "decorator": {
+            "hashes": [
+                "sha256:33cd704aea07b4c28b3eb2c97d288a06918275dac0ecebdaf1bc8a48d98adb9e",
+                "sha256:cabb249f4710888a2fc0e13e9a16c343d932033718ff62e1e9bc93a9d3a9122b"
+            ],
+            "version": "==4.3.2"
+        },
         "django": {
             "hashes": [
                 "sha256:275bec66fd2588dd517ada59b8bfb23d4a9abc5a362349139ddda3c7ff6f5ade",
@@ -139,6 +146,14 @@
             ],
             "index": "pypi",
             "version": "==2.1.7"
+        },
+        "djangorestframework": {
+            "hashes": [
+                "sha256:79c6efbb2514bc50cf25906d7c0a5cfead714c7af667ff4bd110312cd380ae66",
+                "sha256:a4138613b67e3a223be6c97f53b13d759c5b90d2b433bad670b8ebf95402075f"
+            ],
+            "index": "pypi",
+            "version": "==3.9.1"
         },
         "hiredis": {
             "hashes": [
@@ -290,6 +305,13 @@
                 "sha256:b6b235d432cc58ffe111b43e337db71a5caa5d3eaa88f0eacf60b431c7626ef5"
             ],
             "version": "==18.8.1"
+        },
+        "validators": {
+            "hashes": [
+                "sha256:68e4b74889aac1270d83636cb1dbcce3d2271e291ab14023cf95e7dbfbbce09d"
+            ],
+            "index": "pypi",
+            "version": "==0.12.4"
         },
         "yarl": {
             "hashes": [

@@ -11,8 +11,21 @@ from bs4 import BeautifulSoup
 from testgale.core.models import Crawler, Image
 
 
-class CrawlerProcess(AsyncConsumer):
+def check_url(url):
+    # Note: I used this package but this is not so good.
+    from validators.domain import domain
 
+    try:
+        domain(url)
+        return True
+    except:
+        return False
+
+
+class CrawlerProcess(AsyncConsumer):
+    """
+    Actual crawler that fetch each page and update the database
+    """
     @database_sync_to_async
     def update_database_crawler(self, url, depth):
         crawler, created = Crawler.objects.get_or_create(url=url)
@@ -30,20 +43,37 @@ class CrawlerProcess(AsyncConsumer):
         for link in links:
             url = link.get('href')
 
-            if url:
-                obj = Crawler.objects.create(url=url)
-                obj.depth = depth
-                obj.save()
-                crawler.link.add(obj)
+            # Need to test the url for validation sometimes url will be found
+            # without host like this '/sub' in this case we need to append the
+            # actual url like this 'https://google.com/sub
+
+            status = check_url(url)
+
+            if not status:
+                from urllib.parse import urljoin
+
+                url = urljoin(crawler.url, url)
+                print(url)
+
+            obj = Crawler.objects.create(url=url)
+            obj.depth = depth
+            obj.save()
+            crawler.link.add(obj)
 
     @database_sync_to_async
     def update_database_image(self, crawler, depth, images):
         for image in images:
-            url = image.get('href')
+            url = image.get('src')
 
-            if url:
-                obj = Image.objects.create(url=image.get('src'))
-                crawler.image_set.add(obj)
+            status = check_url(url)
+
+            if not status:
+                from urllib.parse import urljoin
+
+                url = urljoin(crawler.url, url)
+        
+            obj = Image.objects.create(url=url)
+            crawler.image_set.add(obj)
         
     async def start_crawler(self, url, depth):
         # Update the database once done
@@ -62,6 +92,9 @@ class CrawlerProcess(AsyncConsumer):
                     await self.update_database_image(crawler, depth, images)
 
     async def process(self, url, depth):
+        """
+        This is the main function that start the crawler.
+        """
         start = int(depth)
         end = 0
         
@@ -91,6 +124,9 @@ class CrawlerProcess(AsyncConsumer):
             )
 
 class CrawlerConsumer(AsyncWebsocketConsumer):
+    """
+    Websocket connection between frontend and backend.
+    """
     async def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         self.room_group_name = 'chat_%s' % self.room_name
